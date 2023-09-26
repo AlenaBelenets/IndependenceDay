@@ -9,11 +9,43 @@ import SpriteKit
 import GameplayKit
 
 var gameScore = 0
+
 enum GameState {
     case preGame
     case inGame
     case afterGame
 }
+
+enum NodesName: String {
+    case background = "Background"
+    case left = "Left"
+    case right = "Right"
+    case telescopicSign = "telescopicSign"
+    case enemy = "Enemy"
+}
+enum DoubleNumbers: Double {
+    case zeroPointOne = 0.1
+    case zeroPointTwo = 0.2
+    case zeroPointThree = 0.3
+    case zeroPointFour = 0.4
+    case zeroPointFive = 0.5
+    case zeroPointSeven = 0.7
+    case zeroPointNine = 0.9
+    case one = 1.0
+    case onePointTwo = 1.2
+    case onePointThree = 1.3
+    case onePointFive = 1.5
+    case two = 2.0
+    case three = 3.0
+    case nine = 9.0
+    case fifteen = 15.0
+    case sixteen = 16.0
+    case seventy = 70.0
+    case ninety = 90.0
+    case oneHundred = 100.0
+    case sixHundred = 600.0
+}
+
 
 struct PhysicCategories {
     static let None: UInt32 = 0
@@ -24,34 +56,39 @@ struct PhysicCategories {
 
 class GameScene: SKScene, SKPhysicsContactDelegate {
 
-
-    var currentGameState = GameState.inGame
-    let scoreLAbel = SKLabelNode(fontNamed: "The Bold Font")
-
-
-
     // MARK: - Private properties
-    private let player = SKSpriteNode(imageNamed: "airplane")
-    private let bulletSound = SKAction.playSoundFileNamed("bulletSound.mp3", waitForCompletion: false)
-    private let rightButton = SKSpriteNode(imageNamed: "right")
-    private let leftButton = SKSpriteNode(imageNamed: "left")
-    private let telescopicSign = SKSpriteNode(imageNamed: "telescopicSign")
+    private var gameArea: CGRect
+    private var currentGameState = GameState.inGame
+    private var gameModel = GameModel.getGameModel()
+    private var imageName: SKSpriteNode!
+    private var player: SKSpriteNode!
+    private var scoreLAbel: SKLabelNode!
 
+    private var lastUpdateTime: TimeInterval = 0
+    private var deltaFrameTime: TimeInterval = 0
+    private var amountToMovePerSecond: CGFloat = DoubleNumbers.sixHundred.rawValue
 
-    func random() -> CGFloat {
-        CGFloat(Float(arc4random()) / 0xFFFFFFFF)
+    lazy var bulletSound = SKAction.playSoundFileNamed(
+        gameModel.nameOsBulletSong,
+        waitForCompletion: false
+    )
+    private lazy var rightButton = SKSpriteNode(imageNamed: gameModel.rightButton)
+    private lazy var leftButton = SKSpriteNode(imageNamed: gameModel.rightButton)
+    private lazy var telescopicSign = SKSpriteNode(imageNamed: gameModel.telescopicSign)
+
+    // MARK: - sceneDidLoad
+    override func sceneDidLoad() {
+        imageName = SKSpriteNode(imageNamed: gameModel.nameOfSky)
+        player = SKSpriteNode(imageNamed: UserDefaults.standard.string(forKey: gameModel.keyForAirplane)!)
+        scoreLAbel = SKLabelNode(fontNamed: gameModel.fontNamed)
     }
-    func random(min: CGFloat, max: CGFloat) -> CGFloat {
-        random() * (max - min) + min
-    }
 
-    var gameArea: CGRect
 
     // MARK: - Initialisations
     override init(size: CGSize) {
-        let maxAspectRatio: CGFloat = 16.0/9.0
+        let maxAspectRatio: CGFloat = DoubleNumbers.sixteen.rawValue/DoubleNumbers.nine.rawValue
         let playableWidth = size.height / maxAspectRatio
-        let margin = (size.width - playableWidth) / 2
+        let margin = (size.width - playableWidth) / DoubleNumbers.two.rawValue
         gameArea = CGRect(x: margin, y: 0, width: playableWidth, height: size.height)
         super.init(size: size)
     }
@@ -59,21 +96,28 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     required init?(coder aDecoder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
+
     // MARK: - didMove
     override func didMove(to view: SKView) {
-        gameScore = 0
-
         self.physicsWorld.contactDelegate = self
 
-        let background = SKSpriteNode(imageNamed: "sky")
-        background.size = self.size
-        background.position = CGPoint(x: self.size.width/2, y: self.size.height/2)
-        background.zPosition = 0
-        self.addChild(background)
+        for i in 0...1 {
 
-        player.setScale(1.3)
-        player.position = CGPoint(x: self.size.width/2, y: self.size.height * 0.2)
-        player.zPosition = 2
+            let background = SKSpriteNode(imageNamed: gameModel.nameOfSky)
+            background.size = self.size
+
+            background.anchorPoint = CGPoint(x: DoubleNumbers.zeroPointFive.rawValue, y: 0)
+
+            background.position = CGPoint(x: self.size.width/DoubleNumbers.two.rawValue, y: self.size.height*CGFloat(i))
+            background.zPosition = 0
+            background.name = NodesName.background.rawValue
+            self.addChild(background)
+
+        }
+
+        player.setScale(DoubleNumbers.onePointThree.rawValue)
+        player.position = CGPoint(x: self.size.width/DoubleNumbers.two.rawValue, y: self.size.height * DoubleNumbers.zeroPointTwo.rawValue)
+        player.zPosition = DoubleNumbers.two.rawValue
         player.physicsBody = SKPhysicsBody(rectangleOf: player.size)
         player.physicsBody?.affectedByGravity = false
         player.physicsBody?.categoryBitMask = PhysicCategories.Player
@@ -81,72 +125,75 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         player.physicsBody?.contactTestBitMask = PhysicCategories.Enemy
         self.addChild(player)
 
-        leftButton.name = "Left"
-        rightButton.name = "Right"
+        leftButton.name = NodesName.left.rawValue
+        rightButton.name = NodesName.right.rawValue
 
-        rightButton.setScale(0.7)
-        rightButton.position = CGPoint(x: self.size.width/1.5, y: self.size.height * 0.1)
-        rightButton.zPosition = 2
+        rightButton.setScale(DoubleNumbers.zeroPointSeven.rawValue)
+        rightButton.position = CGPoint(x: self.size.width/DoubleNumbers.onePointFive.rawValue, y: self.size.height * DoubleNumbers.zeroPointOne.rawValue)
+        rightButton.zPosition = DoubleNumbers.two.rawValue
         self.addChild(rightButton)
 
-        leftButton.setScale(0.7)
-        leftButton.position = CGPoint(x: self.size.width/3, y: self.size.height * 0.1)
-        leftButton.zPosition = 2
+        leftButton.setScale(DoubleNumbers.zeroPointSeven.rawValue)
+        leftButton.position = CGPoint(x: self.size.width/DoubleNumbers.three.rawValue, y: self.size.height * DoubleNumbers.zeroPointOne.rawValue)
+        leftButton.zPosition = DoubleNumbers.two.rawValue
         self.addChild(leftButton)
 
-        telescopicSign.setScale(0.3)
-        telescopicSign.position = CGPoint(x: self.size.width/2, y: self.size.height * 0.1)
-        telescopicSign.zPosition = 2
-        telescopicSign.name = "telescopicSign"
+        telescopicSign.setScale(DoubleNumbers.zeroPointThree.rawValue)
+        telescopicSign.position = CGPoint(x: self.size.width/DoubleNumbers.two.rawValue, y: self.size.height * DoubleNumbers.zeroPointOne.rawValue)
+        telescopicSign.zPosition = DoubleNumbers.two.rawValue
+        telescopicSign.name = NodesName.telescopicSign.rawValue
         self.addChild(telescopicSign)
 
-
-        scoreLAbel.text = "Score: 0"
-        scoreLAbel.fontSize = 70
+        scoreLAbel.text = "Score: \(gameModel.score)"
+        scoreLAbel.fontSize = DoubleNumbers.seventy.rawValue
         scoreLAbel.fontColor = SKColor.black
         scoreLAbel.horizontalAlignmentMode = SKLabelHorizontalAlignmentMode.left
-        scoreLAbel.position = CGPoint(x: self.size.width*0.2, y: self.size.height*0.9)
-        scoreLAbel.zPosition = 100
+        scoreLAbel.position = CGPoint(x: self.size.width*DoubleNumbers.zeroPointTwo.rawValue, y: self.size.height*DoubleNumbers.zeroPointNine.rawValue)
+        scoreLAbel.zPosition = DoubleNumbers.oneHundred.rawValue
         self.addChild(scoreLAbel)
         startNewLevel()
-
-
-
     }
 
-    func addScore() {
-        gameScore += 1
-        scoreLAbel.text = "Score: \(gameScore)"
+    // MARK: - Private Properties
+  private func random() -> CGFloat {
+        CGFloat(Float(arc4random()) / 0xFFFFFFFF)
     }
 
-    func runGameOver() {
+    private func random(min: CGFloat, max: CGFloat) -> CGFloat {
+        random() * (max - min) + min
+    }
+    private func addScore() {
+//        gameScore
+        gameModel.score += Int(DoubleNumbers.one.rawValue)
+        scoreLAbel.text = "Score: \(gameModel.score)"
+    }
+
+    private func runGameOver() {
         currentGameState = GameState.afterGame
-
-
         self.removeAllActions()
-        self.enumerateChildNodes(withName: "Enemy") { enemy, stop in
+        self.enumerateChildNodes(withName: NodesName.enemy.rawValue) { enemy, stop in
             enemy.removeAllActions()
         }
         let changeSceneAction = SKAction.run(changeScene)
-        let waitToChange = SKAction.wait(forDuration: 1)
+        let waitToChange = SKAction.wait(forDuration: DoubleNumbers.one.rawValue)
         let changeSceneSequence = SKAction.sequence([waitToChange, changeSceneAction])
         self.run(changeSceneSequence)
         
     }
 
-    func changeScene() {
+    private func changeScene() {
         let sceneToMoveTo = GameOverScene(size: self.size)
         sceneToMoveTo.scaleMode = self.scaleMode
-        let transition = SKTransition.fade(withDuration: 0.5)
+        let transition = SKTransition.fade(withDuration: DoubleNumbers.zeroPointFive.rawValue)
         self.view?.presentScene(sceneToMoveTo)
 
     }
 
-    func fireBullet() {
-        let bullet = SKSpriteNode(imageNamed: "bullet")
-        bullet.setScale(0.2)
+    private func fireBullet() {
+        let bullet = SKSpriteNode(imageNamed: gameModel.bullet)
+        bullet.setScale(DoubleNumbers.zeroPointTwo.rawValue)
         bullet.position = player.position
-        bullet.zPosition = 1
+        bullet.zPosition = DoubleNumbers.one.rawValue
         bullet.physicsBody = SKPhysicsBody(rectangleOf: bullet.size)
         bullet.physicsBody!.affectedByGravity = false
         bullet.physicsBody?.categoryBitMask = PhysicCategories.Bullet
@@ -154,26 +201,26 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         bullet.physicsBody?.contactTestBitMask = PhysicCategories.Enemy
         self.addChild(bullet)
 
-        let  moveBullet = SKAction.moveTo(y: self.size.height + bullet.size.height, duration: 1)
+        let  moveBullet = SKAction.moveTo(y: self.size.height + bullet.size.height, duration: DoubleNumbers.one.rawValue)
         let deleteBullet = SKAction.removeFromParent()
         let bulletSequence = SKAction.sequence([bulletSound, moveBullet, deleteBullet])
         bullet.run(bulletSequence)
     }
 
     // MARK: - functions for enemy
-    func addEnemy() {
-        let enemy = SKSpriteNode(imageNamed: "enemy")
-        enemy.name = "Enemy"
+    private func addEnemy() {
+        let enemy = SKSpriteNode(imageNamed: gameModel.enemy)
+        enemy.name = NodesName.enemy.rawValue
 
         let randomXStart = random(min: CGRectGetMinX(gameArea), max: CGRectGetMaxX(gameArea))
         let randomXEnd = random(min: CGRectGetMinX(gameArea), max: CGRectGetMaxX(gameArea))
 
-        let startPoint = CGPoint(x: randomXStart, y: self.size.height * 1.2)
-        let endPoint = CGPoint(x: randomXEnd, y: -self.size.height * 0.2)
+        let startPoint = CGPoint(x: randomXStart, y: self.size.height * DoubleNumbers.onePointTwo.rawValue)
+        let endPoint = CGPoint(x: randomXEnd, y: -self.size.height * DoubleNumbers.zeroPointTwo.rawValue)
 
-        enemy.setScale(0.4)
+        enemy.setScale(DoubleNumbers.zeroPointFour.rawValue)
         enemy.position = startPoint
-        enemy.zPosition = 2
+        enemy.zPosition = DoubleNumbers.two.rawValue
         enemy.physicsBody = SKPhysicsBody(rectangleOf: enemy.size)
         enemy.physicsBody?.affectedByGravity = false
         enemy.physicsBody?.categoryBitMask = PhysicCategories.Enemy
@@ -181,7 +228,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         enemy.physicsBody?.contactTestBitMask = PhysicCategories.Player | PhysicCategories.Bullet
         self.addChild(enemy)
 
-        let moveEnemy = SKAction.move(to: endPoint, duration: 5)
+        let moveEnemy = SKAction.move(to: endPoint, duration: gameModel.duration)
         let deleteEnemy = SKAction.removeFromParent()
         let enemySequence = SKAction.sequence([moveEnemy, deleteEnemy])
 
@@ -196,9 +243,34 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
 
     }
 
+    override func update(_ currentTime: TimeInterval) {
+
+        if lastUpdateTime == 0 {
+            lastUpdateTime = currentTime
+        }
+        else {
+            deltaFrameTime = currentTime - lastUpdateTime
+            lastUpdateTime = currentTime
+        }
+
+        let amountToMoveBackground = amountToMovePerSecond * CGFloat(deltaFrameTime)
+        self.enumerateChildNodes(withName: NodesName.background.rawValue) { background, stop in
+
+
+            if self.currentGameState == GameState.inGame {
+                background.position.y -= amountToMoveBackground
+            }
+
+            if background.position.y < -self.size.height {
+                background.position.y += self.size.height*DoubleNumbers.two.rawValue
+            }
+        }
+
+    }
+
     func startNewLevel() {
         let enemy = SKAction.run(addEnemy)
-        let waitToEnemy = SKAction.wait(forDuration: 1)
+        let waitToEnemy = SKAction.wait(forDuration: DoubleNumbers.one.rawValue)
         let enemySequence = SKAction.sequence([enemy, waitToEnemy])
         let enemyEverySecond = SKAction.repeatForever(enemySequence)
         self.run(enemyEverySecond)
@@ -244,15 +316,15 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
 
     }
 
-    func spawnExplosion(spawnPosition: CGPoint) {
-        let explosion = SKSpriteNode(imageNamed: "boom")
+    private func spawnExplosion(spawnPosition: CGPoint) {
+        let explosion = SKSpriteNode(imageNamed: gameModel.nameOfAttack)
         explosion.position = spawnPosition
-        explosion.zPosition = 3
+        explosion.zPosition = DoubleNumbers.three.rawValue
         explosion.setScale(0)
         self.addChild(explosion)
 
-        let scaleIn = SKAction.scale(to: 1, duration: 0.1)
-        let fadeOut = SKAction.fadeOut(withDuration: 0.1)
+        let scaleIn = SKAction.scale(to: DoubleNumbers.one.rawValue, duration: DoubleNumbers.zeroPointOne.rawValue)
+        let fadeOut = SKAction.fadeOut(withDuration: DoubleNumbers.zeroPointOne.rawValue)
         let delete = SKAction.removeFromParent()
         let explosionSequence = SKAction.sequence([scaleIn, fadeOut, delete])
         explosion.run(explosionSequence)
@@ -265,34 +337,24 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             let location = touch.location(in: self)
             let node = self.atPoint(location)
 
-            if (node.name == "Left") {
+            if (node.name == NodesName.left.rawValue) {
                 // Implement your logic for left button touch here:
-                player.position = CGPoint(x:player.position.x-15, y:player.position.y)
-            } else if (node.name == "Right") {
+                player.position = CGPoint(x:player.position.x-DoubleNumbers.fifteen.rawValue, y:player.position.y)
+            } else if (node.name == NodesName.right.rawValue) {
                 // Implement your logic for right button touch here:
-                player.position = CGPoint(x:player.position.x+15, y:player.position.y)
+                player.position = CGPoint(x:player.position.x+DoubleNumbers.fifteen.rawValue, y:player.position.y)
             }
-            if (node.name == "telescopicSign") {
+            if (node.name == NodesName.telescopicSign.rawValue) {
                 fireBullet()
 
             }
 
-            if player.position.x > CGRectGetMaxX(gameArea) - player.size.width/2{
-                player.position.x = CGRectGetMaxX(gameArea) - player.size.width/2
+            if player.position.x > CGRectGetMaxX(gameArea) - player.size.width/DoubleNumbers.two.rawValue {
+                player.position.x = CGRectGetMaxX(gameArea) - player.size.width/DoubleNumbers.two.rawValue
             }
-            if player.position.x < CGRectGetMinX(gameArea) + player.size.width/2{
-                player.position.x = CGRectGetMinX(gameArea) + player.size.width/2
+            if player.position.x < CGRectGetMinX(gameArea) + player.size.width/DoubleNumbers.two.rawValue{
+                player.position.x = CGRectGetMinX(gameArea) + player.size.width/DoubleNumbers.two.rawValue
             }
         }
-
-
-
     }
-//    override func touchesMoved(_ touches: Set<UITouch>, with event: UIEvent?) {
-//        for touch: AnyObject in touches {
-//            if currentGameState == GameState.inGame {
-//
-//            }
-//        }
-//    }
 }
