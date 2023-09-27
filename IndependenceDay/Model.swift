@@ -22,6 +22,7 @@ struct GameModel {
     let leftButton: String
     let rightButton: String
     let telescopicSign: String
+
     let bullet: String
     let enemy: String
     let fontNamed: String
@@ -31,9 +32,20 @@ struct GameModel {
     let nameOfSky: String
     let nameOfAttack: String
     let done: String
+    let durationKey: String
+
+    let keyForFirstRecord: String
+    let keyForSecondRecord: String
+    let keyForThirdRecord: String
+    let keyHightScore: String
+
+    let firstNameKey: String
+    let secondNameKey: String
+    let thirdNameKey: String
 
     static func getGameModel() -> GameModel {
-        GameModel(name: "Player", airplane: Airplanes.airplane1.rawValue, duration: 1, score: 0, record: 0, leftButton: "left", rightButton: "right", telescopicSign: "telescopicSign", bullet: "bullet", enemy: "enemy", fontNamed: "The Bold Font", keyForAirplane: "AirplaineKey", keyForDuration: "DurationKey", nameOsBulletSong: "bulletSound.mp3", nameOfSky: "sky", nameOfAttack: "boom", done: "done")
+        GameModel(name: "Player", airplane: Airplanes.airplane1.rawValue, duration: 1, score: 0, record: 0, leftButton: "left", rightButton: "right", telescopicSign: "telescopicSign", bullet: "bullet", enemy: "enemy", fontNamed: "The Bold Font", keyForAirplane: "AirplaineKey", keyForDuration: "DurationKey", nameOsBulletSong: "bulletSound.mp3", nameOfSky: "sky", nameOfAttack: "boom", done: "done", durationKey: "Duration", keyForFirstRecord: "firstHighScore", keyForSecondRecord: "secondHightScore", keyForThirdRecord: "thirdHightScore", keyHightScore: "highScoreSaved", firstNameKey: "Name", secondNameKey: "secondNameKey", thirdNameKey: "thirdNameKey")
 
     }
 }
+

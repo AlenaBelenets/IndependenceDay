@@ -10,19 +10,21 @@ import GameplayKit
 
 var gameScore = 0
 
-enum GameState {
+private enum GameState {
     case preGame
     case inGame
     case afterGame
 }
 
-enum NodesName: String {
+ enum NodesName: String {
     case background = "Background"
     case left = "Left"
     case right = "Right"
     case telescopicSign = "telescopicSign"
     case enemy = "Enemy"
+     case score = "score"
 }
+
 enum DoubleNumbers: Double {
     case zeroPointOne = 0.1
     case zeroPointTwo = 0.2
@@ -30,19 +32,24 @@ enum DoubleNumbers: Double {
     case zeroPointFour = 0.4
     case zeroPointFive = 0.5
     case zeroPointSeven = 0.7
+    case zeroPointEightFive = 0.85
     case zeroPointNine = 0.9
     case one = 1.0
     case onePointTwo = 1.2
     case onePointThree = 1.3
     case onePointFive = 1.5
+    case onePointEight = 1.8
     case two = 2.0
     case three = 3.0
     case nine = 9.0
+    case ten = 10.0
     case fifteen = 15.0
     case sixteen = 16.0
+    case fifty = 50.0
     case seventy = 70.0
     case ninety = 90.0
     case oneHundred = 100.0
+    case oneHundredAndFifty = 150.0 
     case sixHundred = 600.0
 }
 
@@ -73,7 +80,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         waitForCompletion: false
     )
     private lazy var rightButton = SKSpriteNode(imageNamed: gameModel.rightButton)
-    private lazy var leftButton = SKSpriteNode(imageNamed: gameModel.rightButton)
+    private lazy var leftButton = SKSpriteNode(imageNamed: gameModel.leftButton)
     private lazy var telescopicSign = SKSpriteNode(imageNamed: gameModel.telescopicSign)
 
     // MARK: - sceneDidLoad
@@ -163,9 +170,9 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         random() * (max - min) + min
     }
     private func addScore() {
-//        gameScore
         gameModel.score += Int(DoubleNumbers.one.rawValue)
         scoreLAbel.text = "Score: \(gameModel.score)"
+        UserDefaults.standard.set(gameModel.score, forKey: NodesName.score.rawValue)
     }
 
     private func runGameOver() {
@@ -175,7 +182,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             enemy.removeAllActions()
         }
         let changeSceneAction = SKAction.run(changeScene)
-        let waitToChange = SKAction.wait(forDuration: DoubleNumbers.one.rawValue)
+        let waitToChange = SKAction.wait(forDuration: DoubleNumbers.zeroPointFive.rawValue  )
         let changeSceneSequence = SKAction.sequence([waitToChange, changeSceneAction])
         self.run(changeSceneSequence)
         
@@ -228,7 +235,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         enemy.physicsBody?.contactTestBitMask = PhysicCategories.Player | PhysicCategories.Bullet
         self.addChild(enemy)
 
-        let moveEnemy = SKAction.move(to: endPoint, duration: gameModel.duration)
+        let moveEnemy = SKAction.move(to: endPoint, duration: UserDefaults.standard.double(forKey: gameModel.durationKey))
         let deleteEnemy = SKAction.removeFromParent()
         let enemySequence = SKAction.sequence([moveEnemy, deleteEnemy])
 
@@ -323,8 +330,8 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         explosion.setScale(0)
         self.addChild(explosion)
 
-        let scaleIn = SKAction.scale(to: DoubleNumbers.one.rawValue, duration: DoubleNumbers.zeroPointOne.rawValue)
-        let fadeOut = SKAction.fadeOut(withDuration: DoubleNumbers.zeroPointOne.rawValue)
+        let scaleIn = SKAction.scale(to: DoubleNumbers.one.rawValue, duration: UserDefaults.standard.double(forKey: gameModel.durationKey))
+        let fadeOut = SKAction.fadeOut(withDuration: UserDefaults.standard.double(forKey: gameModel.durationKey))
         let delete = SKAction.removeFromParent()
         let explosionSequence = SKAction.sequence([scaleIn, fadeOut, delete])
         explosion.run(explosionSequence)

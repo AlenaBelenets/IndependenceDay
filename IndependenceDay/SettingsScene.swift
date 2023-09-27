@@ -8,7 +8,24 @@
 import Foundation
 import SpriteKit
 
+// MARK: - Enum NodesName
+  enum NodesNames: String {
+    case back = "Back"
+    case left = "left"
+    case right = "right"
+    case theBoltFont = "The Bolt Font"
+    case player = "Player"
+    case name = "Name"
+    case airplane1 = "airplane1"
+    case airplane2 = "airplane2"
+    case airplane3 = "airplane3"
+    case duration = "Duration"
+    case nameLabel = "NameLabel"
+    case gameOver = "Game Over"
+    case restart = "Restart"
+}
 
+// MARK: - extension Alertable
 protocol Alertable { }
 extension Alertable where Self: SKScene {
 
@@ -18,27 +35,25 @@ extension Alertable where Self: SKScene {
 
         let okAction = UIAlertAction(title: "OK", style: .cancel) { action in
             if let textField = alertController.textFields?[0], let text = textField.text {
-                UserDefaults.standard.set(text, forKey: "Name")
+                UserDefaults.standard.set(text, forKey: NodesNames.name.rawValue)
             }
 
         }
 
 
-            alertController.addAction(okAction)
+        alertController.addAction(okAction)
 
-            alertController.addTextField { (textField)  in
-                textField.placeholder = "Player"
-            }
-
-            view?.window?.rootViewController?.present(alertController, animated: true)
+        alertController.addTextField { (textField)  in
+            textField.placeholder = NodesNames.player.rawValue
         }
+
+        view?.window?.rootViewController?.present(alertController, animated: true)
+    }
 
     func showAlertWithSettings(withTitle title: String, message: String, text: UITextField) {
 
         let alertController = UIAlertController(title: title, message: message, preferredStyle: .actionSheet)
 
-//        let okAction = UIAlertAction(title: "OK", style: .default)
-//        alertController.addAction(okAction)
 
         let settingsAction = UIAlertAction(title: "Enter Your Name", style: .default) { _ in
 
@@ -52,193 +67,163 @@ extension Alertable where Self: SKScene {
 
         alertController.addAction(settingsAction)
 
-                view?.window?.rootViewController?.present(alertController, animated: true)
-            }
-        }
+        view?.window?.rootViewController?.present(alertController, animated: true)
+    }
+}
 
-
-
+// MARK: - class SettingsScene
 class SettingsScene: SKScene, Alertable {
 
-    let backLabel = SKLabelNode(fontNamed: "The Bolt Font")
     var gameModel = GameModel.getGameModel()
+    let backLabel = SKLabelNode(fontNamed: NodesNames.theBoltFont.rawValue)
     lazy var doneNode = SKSpriteNode(imageNamed: gameModel.done)
-    let nameLabel = SKLabelNode(fontNamed: "The Bolt Font")
-    lazy var durationLabel = SKLabelNode(fontNamed: "The Bolt Font")
-
+    let nameLabel = SKLabelNode(fontNamed: NodesNames.theBoltFont.rawValue)
+    lazy var durationLabel = SKLabelNode(fontNamed: NodesNames.theBoltFont.rawValue)
     lazy var changeDuration = gameModel.duration
-
 
     var alert = UIAlertController(title: "Some Title", message: "Enter a text", preferredStyle: .alert)
 
-//    private lazy var textField: UITextField = {
-//           let textField = UITextField()
-//           textField.frame.size = CGSize(width: 100, height: 30)
-//           textField.backgroundColor = .cyan
-//           return textField
-//       }()
-
-
     override func didMove(to view: SKView) {
-        let background = SKSpriteNode(imageNamed: "sky")
-        background.position = CGPoint(x: self.size.width/2, y: self.size.height/2)
+        let background = SKSpriteNode(imageNamed: gameModel.nameOfSky)
+        background.position = CGPoint(x: self.size.width/DoubleNumbers.two.rawValue, y: self.size.height/DoubleNumbers.two.rawValue)
         background.zPosition = 0
         background.size = self.size
         self.addChild(background)
 
-
-
-        let settingsLAbel = SKLabelNode(fontNamed: "The Bold Font")
+        let settingsLAbel = SKLabelNode(fontNamed: NodesNames.theBoltFont.rawValue)
         settingsLAbel.text = "Settings:"
-        settingsLAbel.fontSize = 100
+        settingsLAbel.fontSize = DoubleNumbers.oneHundred.rawValue
         settingsLAbel.fontColor = SKColor.black
-        settingsLAbel.position = CGPoint(x: self.size.width*0.5, y: self.size.height*0.85)
-        settingsLAbel.zPosition = 1
+        settingsLAbel.position = CGPoint(x: self.size.width*DoubleNumbers.zeroPointFive.rawValue, y: self.size.height*DoubleNumbers.zeroPointNine.rawValue)
+        settingsLAbel.zPosition = DoubleNumbers.one.rawValue
         self.addChild(settingsLAbel)
 
-        let aiplaineLAbel = SKLabelNode(fontNamed: "The Bold Font")
-        aiplaineLAbel.text = "Choose your airplane:"
-        aiplaineLAbel.fontSize = 70
-        aiplaineLAbel.fontColor = SKColor.black
-        aiplaineLAbel.position = CGPoint(x: self.size.width*0.5, y: self.size.height*0.79)
-        aiplaineLAbel.zPosition = 1
-        self.addChild(aiplaineLAbel)
+        let airplaneLabel = SKLabelNode(fontNamed: NodesNames.theBoltFont.rawValue)
+        airplaneLabel.text = "Choose your airplane:"
+        airplaneLabel.fontSize = DoubleNumbers.seventy.rawValue
+        airplaneLabel.fontColor = SKColor.black
+        airplaneLabel.position = CGPoint(x: self.size.width*DoubleNumbers.zeroPointFive.rawValue, y: self.size.height*DoubleNumbers.zeroPointEightFive.rawValue)
+        airplaneLabel.zPosition = DoubleNumbers.one.rawValue
+        self.addChild(airplaneLabel)
 
-        backLabel.text = "Back"
-        backLabel.fontSize = 70
+        backLabel.text = NodesNames.back.rawValue
+        backLabel.fontSize = DoubleNumbers.seventy.rawValue
         backLabel.fontColor = SKColor.black
-        backLabel.position = CGPoint(x: self.size.width/2, y: self.size.height*0.1)
-        backLabel.zPosition = 1
+        backLabel.position = CGPoint(x: self.size.width/DoubleNumbers.two.rawValue, y: self.size.height*DoubleNumbers.zeroPointOne.rawValue)
+        backLabel.zPosition = DoubleNumbers.one.rawValue
         self.addChild(backLabel)
 
-        let changeDurationLabel = SKLabelNode(fontNamed: "The Bolt Font")
+        let changeDurationLabel = SKLabelNode(fontNamed: NodesNames.theBoltFont.rawValue)
         changeDurationLabel.text = "Change duration:"
-        changeDurationLabel.fontSize = 70
+        changeDurationLabel.fontSize = DoubleNumbers.seventy.rawValue
         changeDurationLabel.fontColor = SKColor.black
-        changeDurationLabel.position = CGPoint(x: self.size.width/2, y: self.size.height*0.4)
-        changeDurationLabel.zPosition = 1
+        changeDurationLabel.position = CGPoint(x: self.size.width/DoubleNumbers.two.rawValue, y: self.size.height*DoubleNumbers.zeroPointFour.rawValue)
+        changeDurationLabel.zPosition = DoubleNumbers.one.rawValue
         self.addChild(changeDurationLabel)
 
-        var duration = UserDefaults.standard.string(forKey: "Duration") ?? String(gameModel.duration)
+        var duration = UserDefaults.standard.string(forKey: NodesNames.duration.rawValue
+        ) ?? String(gameModel.duration)
 
         durationLabel.text = "\(duration)"
-        durationLabel.fontSize = 70
+        durationLabel.fontSize = DoubleNumbers.seventy.rawValue
         durationLabel.fontColor = SKColor.black
-        durationLabel.position = CGPoint(x: self.size.width/2, y: self.size.height*0.33)
-        durationLabel.zPosition = 1
+        durationLabel.position = CGPoint(x: self.size.width/DoubleNumbers.two.rawValue, y: self.size.height*DoubleNumbers.zeroPointThree.rawValue)
+        durationLabel.zPosition = DoubleNumbers.one.rawValue
         self.addChild(durationLabel)
 
-        let airplaine1 = SKSpriteNode(imageNamed: "airplane1")
-        airplaine1.setScale(1.8)
-        airplaine1.position = CGPoint(x: self.size.width*0.5, y: self.size.height*0.7)
-        airplaine1.zPosition = 2
-        airplaine1.name = "airplane1"
-        self.addChild(airplaine1)
+        let airplaneNodeOne = SKSpriteNode(imageNamed: NodesNames.airplane1.rawValue)
+        airplaneNodeOne.setScale(DoubleNumbers.onePointEight.rawValue)
+        airplaneNodeOne.position = CGPoint(x: self.size.width*DoubleNumbers.zeroPointFive.rawValue, y: self.size.height*DoubleNumbers.zeroPointSeven.rawValue)
+        airplaneNodeOne.zPosition = DoubleNumbers.two.rawValue
+        airplaneNodeOne.name = NodesNames.airplane1.rawValue
+        self.addChild(airplaneNodeOne)
 
-        let airplaine2 = SKSpriteNode(imageNamed: "airplane2")
-        airplaine2.setScale(1.3)
-        airplaine2.position = CGPoint(x: self.size.width/3.2, y: self.size.height*0.7)
-        airplaine2.zPosition = 2
-        airplaine2.name = "airplane2"
-        self.addChild(airplaine2)
+        let airplaneNodeTwo = SKSpriteNode(imageNamed: NodesNames.airplane2.rawValue)
+        airplaneNodeTwo.setScale(DoubleNumbers.onePointThree.rawValue)
+        airplaneNodeTwo.position = CGPoint(x: self.size.width/DoubleNumbers.three.rawValue, y: self.size.height*DoubleNumbers.zeroPointSeven.rawValue)
+        airplaneNodeTwo.zPosition = DoubleNumbers.two.rawValue
+        airplaneNodeTwo.name = NodesNames.airplane2.rawValue
+        self.addChild(airplaneNodeTwo)
 
-        let airplaine3 = SKSpriteNode(imageNamed: "airplane3")
-        airplaine3.setScale(1.8)
-        airplaine3.position = CGPoint(x: self.size.width/1.5, y: self.size.height*0.7)
-        airplaine3.zPosition = 2
-        airplaine3.name = "airplane3"
-        self.addChild(airplaine3)
+        let airplaneNodeThree = SKSpriteNode(imageNamed: NodesNames.airplane3.rawValue)
+        airplaneNodeThree.setScale(DoubleNumbers.two.rawValue)
+        airplaneNodeThree.position = CGPoint(x: self.size.width/DoubleNumbers.onePointFive.rawValue, y: self.size.height*DoubleNumbers.zeroPointSeven.rawValue)
+        airplaneNodeThree.zPosition = DoubleNumbers.two.rawValue
+        airplaneNodeThree.name = NodesNames.airplane3.rawValue
+        self.addChild(airplaneNodeThree)
 
-
-
-        alert.addTextField(configurationHandler: { (textField) -> Void in
-            textField.text = "Some default text."
-        })
-        alert.addAction(UIAlertAction(title: "OK", style: .default, handler: { [self] (action) -> Void in
-            let textField = alert.textFields![0] as UITextField
-            print("Text field: \(String(describing: textField.text))")
-        }))
-
-        let playerName = UserDefaults.standard.string(forKey: "Name") ?? "Player"
+        let playerName = UserDefaults.standard.string(forKey: NodesNames.name.rawValue) ?? NodesNames.player.rawValue
         nameLabel.text = "Tap to change name- \(playerName)"
-        nameLabel.fontSize = 65
+        nameLabel.fontSize = DoubleNumbers.seventy.rawValue
         nameLabel.fontColor = SKColor.black
-        nameLabel.position = CGPoint(x: self.size.width/2, y: self.size.height*0.55)
-        nameLabel.zPosition = 1
-        nameLabel.name = "NameLabel"
+        nameLabel.position = CGPoint(x: self.size.width/DoubleNumbers.two.rawValue, y: self.size.height*DoubleNumbers.zeroPointFive.rawValue)
+        nameLabel.zPosition = DoubleNumbers.one.rawValue
+        nameLabel.name = NodesNames.nameLabel.rawValue
         self.addChild(nameLabel)
 
-        doneNode.setScale(1)
-        doneNode.zPosition = 3
+        doneNode.setScale(DoubleNumbers.one.rawValue)
+        doneNode.zPosition = DoubleNumbers.three.rawValue
         self.addChild(doneNode)
 
         let leftImage = SKSpriteNode(imageNamed: gameModel.leftButton)
-        leftImage.setScale(0.4)
-        leftImage.position = CGPoint(x: self.size.width/3.2, y: self.size.height*0.3)
-        leftImage.zPosition = 2
-        leftImage.name = "left"
+        leftImage.setScale(DoubleNumbers.zeroPointFour.rawValue)
+        leftImage.position = CGPoint(x: self.size.width/DoubleNumbers.three.rawValue, y: self.size.height*DoubleNumbers.zeroPointThree.rawValue)
+        leftImage.zPosition = DoubleNumbers.two.rawValue
+        leftImage.name = NodesName.left.rawValue
         self.addChild(leftImage)
 
         let rightImage = SKSpriteNode(imageNamed: gameModel.rightButton)
-        rightImage.setScale(0.4)
-        rightImage.position = CGPoint(x: self.size.width/1.5, y: self.size.height*0.3)
-        rightImage.zPosition = 2
-        rightImage.name = "right"
+        rightImage.setScale(DoubleNumbers.zeroPointFour.rawValue)
+        rightImage.position = CGPoint(x: self.size.width/DoubleNumbers.onePointFive.rawValue, y: self.size.height*DoubleNumbers.zeroPointThree.rawValue)
+        rightImage.zPosition = DoubleNumbers.two.rawValue
+        rightImage.name = NodesName.right.rawValue
         self.addChild(rightImage)
-
 
     }
 
 
-override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
+    override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
 
-   
+        for touch: AnyObject in touches {
 
+            let location = touch.location(in: self)
+            let node = self.atPoint(location)
 
+            if (node.name == Airplanes.airplane1.rawValue) {
+                UserDefaults.standard.set(Airplanes.airplane1.rawValue, forKey: gameModel.keyForAirplane)
+                doneNode.position = node.position
 
-    for touch: AnyObject in touches {
+            } else if (node.name == Airplanes.airplane2.rawValue) {
+                UserDefaults.standard.set(Airplanes.airplane2.rawValue, forKey: gameModel.keyForAirplane)
+                doneNode.position = node.position
+            } else if (node.name == Airplanes.airplane3.rawValue) {
+                //                    gameModel.airplane = Airplanes.airplane3.rawValue
+                UserDefaults.standard.set(Airplanes.airplane3.rawValue, forKey: gameModel.keyForAirplane)
+                doneNode.position = node.position
 
-        let location = touch.location(in: self)
-        let node = self.atPoint(location)
+            } else if (node.name == NodesNames.nameLabel.rawValue) {
+                showAlert(withTitle: "Hey!", message: "Enter your name")
 
-                if (node.name == Airplanes.airplane1.rawValue) {
-//                    gameModel.airplane = Airplanes.airplane1.rawValue
-                    UserDefaults.standard.set(Airplanes.airplane1.rawValue, forKey: "AirplaineKey")
-                    doneNode.position = node.position
-                    
-                } else if (node.name == Airplanes.airplane2.rawValue) {
-//                    gameModel.airplane = Airplanes.airplane2.rawValue
-                    UserDefaults.standard.set(Airplanes.airplane2.rawValue, forKey: "AirplaineKey")
-                    doneNode.position = node.position
-                } else if (node.name == Airplanes.airplane3.rawValue) {
-                    //                    gameModel.airplane = Airplanes.airplane3.rawValue
-                    UserDefaults.standard.set(Airplanes.airplane3.rawValue, forKey: "AirplaineKey")
-                    doneNode.position = node.position
+            } else if (node.name == NodesName.left.rawValue) {
 
-                } else if (node.name == "NameLabel") {
-                   showAlert(withTitle: "Hey!", message: "Enter your name")
+                changeDuration -= DoubleNumbers.zeroPointOne.rawValue
+                durationLabel.text = String(changeDuration)
+                UserDefaults.standard.set(changeDuration, forKey: NodesNames.duration.rawValue)
 
-                } else if (node.name == "left") {
+            }  else if (node.name == NodesName.right.rawValue) {
 
-                    changeDuration -= 0.1
-                    durationLabel.text = String(changeDuration)
-                    UserDefaults.standard.set(changeDuration, forKey: "Duration")
-
-                }  else if (node.name == "right") {
-
-                    changeDuration += 0.1
-                    durationLabel.text = String(changeDuration)
-                    UserDefaults.standard.set(changeDuration, forKey: "Duration")
-
-                }
-                else if backLabel.contains(location)      {
-                    let sceneMoveTo = MainMenuScene(size: self.size)
-                    sceneMoveTo.scaleMode = self.scaleMode
-                    let myTransition = SKTransition.fade(withDuration: 0.5)
-                    self.view?.presentScene(sceneMoveTo, transition: myTransition)
+                changeDuration += DoubleNumbers.zeroPointOne.rawValue
+                durationLabel.text = String(changeDuration)
+                UserDefaults.standard.set(changeDuration, forKey: NodesNames.duration.rawValue)
 
             }
-        continue
+            else if backLabel.contains(location)      {
+                let sceneMoveTo = MainMenuScene(size: self.size)
+                sceneMoveTo.scaleMode = self.scaleMode
+                let myTransition = SKTransition.fade(withDuration: DoubleNumbers.zeroPointFive.rawValue)
+                self.view?.presentScene(sceneMoveTo, transition: myTransition)
+
+            }
 
         }
     }

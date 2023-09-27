@@ -11,7 +11,6 @@
 		923BA58A2ABCD8C50066F1C1 /* SettingsScene.swift in Sources */ = {isa = PBXBuildFile; fileRef = 923BA5892ABCD8C50066F1C1 /* SettingsScene.swift */; };
 		923BA58C2ABCD8D40066F1C1 /* RecordsScene.swift in Sources */ = {isa = PBXBuildFile; fileRef = 923BA58B2ABCD8D40066F1C1 /* RecordsScene.swift */; };
 		923BA58E2ABCDA350066F1C1 /* Model.swift in Sources */ = {isa = PBXBuildFile; fileRef = 923BA58D2ABCDA350066F1C1 /* Model.swift */; };
-		923BA5942ABDBB340066F1C1 /* StorageManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 923BA5932ABDBB340066F1C1 /* StorageManager.swift */; };
 		92D692F82AAE2F5600611C23 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 92D692F72AAE2F5600611C23 /* AppDelegate.swift */; };
 		92D692FA2AAE2F5600611C23 /* GameScene.sks in Resources */ = {isa = PBXBuildFile; fileRef = 92D692F92AAE2F5600611C23 /* GameScene.sks */; };
 		92D692FC2AAE2F5600611C23 /* Actions.sks in Resources */ = {isa = PBXBuildFile; fileRef = 92D692FB2AAE2F5600611C23 /* Actions.sks */; };
@@ -29,7 +28,6 @@
 		923BA5892ABCD8C50066F1C1 /* SettingsScene.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsScene.swift; sourceTree = "<group>"; };
 		923BA58B2ABCD8D40066F1C1 /* RecordsScene.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecordsScene.swift; sourceTree = "<group>"; };
 		923BA58D2ABCDA350066F1C1 /* Model.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Model.swift; sourceTree = "<group>"; };
-		923BA5932ABDBB340066F1C1 /* StorageManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StorageManager.swift; sourceTree = "<group>"; };
 		92D692F42AAE2F5600611C23 /* IndependenceDay.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = IndependenceDay.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		92D692F72AAE2F5600611C23 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		92D692F92AAE2F5600611C23 /* GameScene.sks */ = {isa = PBXFileReference; lastKnownFileType = file.sks; path = GameScene.sks; sourceTree = "<group>"; };
@@ -87,7 +85,6 @@
 				923BA5892ABCD8C50066F1C1 /* SettingsScene.swift */,
 				923BA58B2ABCD8D40066F1C1 /* RecordsScene.swift */,
 				923BA58D2ABCDA350066F1C1 /* Model.swift */,
-				923BA5932ABDBB340066F1C1 /* StorageManager.swift */,
 			);
 			path = IndependenceDay;
 			sourceTree = "<group>";
@@ -169,7 +166,6 @@
 				923BA5882ABCD0900066F1C1 /* MainMenuScene.swift in Sources */,
 				92D692FE2AAE2F5600611C23 /* GameScene.swift in Sources */,
 				92D693002AAE2F5600611C23 /* GameViewController.swift in Sources */,
-				923BA5942ABDBB340066F1C1 /* StorageManager.swift in Sources */,
 				923BA58C2ABCD8D40066F1C1 /* RecordsScene.swift in Sources */,
 				923BA58A2ABCD8C50066F1C1 /* SettingsScene.swift in Sources */,
 				92D693112AB9FEA900611C23 /* GameOverScene.swift in Sources */,
